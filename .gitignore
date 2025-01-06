@@ -1,2 +1,15 @@
-.env
+
 node_modules
+
+
+build
+
+
+.env
+
+
+src/_globals/id_rsa_private.pem
+src/_globals/id_rsa_public.pem
+
+
+src/_globals/config/firebaseServiceAccountKey.json

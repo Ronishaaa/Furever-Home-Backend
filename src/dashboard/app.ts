@@ -1,7 +1,9 @@
 import cors from "@koa/cors";
 import { errorHandler, notFoundHandler } from "_globals/middlewares";
-import apiRouter from "client/api/users/users.routes";
+import apiiRouter from "dashboard/api/admin/admin.routes";
+import apiRouter from "dashboard/api/pet/pets.routes";
 import Koa from "koa";
+import koaBody from "koa-body";
 import bodyParser from "koa-bodyparser";
 import helmet from "koa-helmet";
 
@@ -23,16 +25,26 @@ app.use(helmet());
 app.use(bodyParser());
 app.use(
   cors({
-    origin: "http://localhost:5174", // Allow your frontend's origin
+    origin: "http://localhost:5173", // Allow your frontend's origin
     credentials: true, // Allow cookies and other credentials
   })
 );
 
 app.use(apiRouter.routes());
+app.use(apiiRouter.routes());
 
 app.use(notFoundHandler);
 
-// handle any unhandled rejection
+app.use(
+  koaBody({
+    multipart: true, // For file uploads
+    formidable: {
+      uploadDir: "./uploads", // Temporary directory for uploaded files
+      keepExtensions: true, // Keep file extensions
+    },
+  })
+);
+
 process.on("unhandledRejection", (reason: string) => {
   console.error(reason);
   // throw new AppError(reason, 500, false);

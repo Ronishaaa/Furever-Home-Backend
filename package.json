@@ -17,7 +17,7 @@
     "@koa/cors": "^5.0.0",
     "@koa/multer": "^3.0.2",
     "@koa/router": "^13.1.0",
-    "@prisma/client": "^6.1.0",
+    "@prisma/client": "^6.3.1",
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.5.1",
     "cookie-parser": "^1.4.7",
@@ -34,6 +34,7 @@
     "multer": "1.4.5-lts.1",
     "nodemailer": "^6.9.16",
     "pino": "^9.6.0",
+    "prisma": "^6.3.1",
     "sharp": "^0.33.5",
     "uuid": "^11.0.3",
     "zod": "^3.24.1"
@@ -52,9 +53,13 @@
     "nodemon": "^3.1.9",
     "pino-pretty": "^13.0.0",
     "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.2"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }

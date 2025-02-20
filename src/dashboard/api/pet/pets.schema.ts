@@ -1,4 +1,10 @@
-import { AdoptionStatus } from "@prisma/client";
+import {
+  AdoptionStatus,
+  EnergyLevel,
+  ExperienceLevel,
+  Temperament,
+  TrainingLevel,
+} from "@prisma/client";
 import { z } from "zod";
 
 export const PetSchema = z.object({
@@ -14,6 +20,25 @@ export const PetSchema = z.object({
   }),
   type: z.string().trim().min(1, { message: "Pet type is required" }),
   images: z.array(z.string()).optional(),
+  personality: z
+    .object({
+      energyLevel: z.nativeEnum(EnergyLevel),
+      temperament: z.nativeEnum(Temperament),
+      training: z.nativeEnum(TrainingLevel),
+      strangerBehavior: z.string().optional(),
+      petBehavior: z.string().optional(),
+      specialTraits: z.string().optional(),
+    })
+    .optional(),
+  adoptionInfo: z
+    .object({
+      idealHome: z.string().optional(),
+      children: z.boolean(),
+      otherPets: z.boolean(),
+      experienceLevel: z.nativeEnum(ExperienceLevel),
+      specialNeeds: z.string().optional(),
+    })
+    .optional(),
 });
 
 export type PetInput = z.infer<typeof PetSchema>;

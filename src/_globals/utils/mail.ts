@@ -1,6 +1,6 @@
-import { db } from "_globals/db";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+import { db } from "../db";
 
 export const sendOtpEmail = async (email: string) => {
   const otp = crypto.randomInt(100000, 999999).toString();

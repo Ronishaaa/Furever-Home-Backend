@@ -5,6 +5,6 @@ import { AdminLoginSchema } from "./admin.schema";
 
 const router = new Router();
 
-router.post("/admin/login", validate(AdminLoginSchema), login);
+router.post("/login", validate(AdminLoginSchema), login);
 
 export default router;

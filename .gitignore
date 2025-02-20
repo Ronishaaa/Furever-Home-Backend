@@ -1,15 +1,12 @@
-
+# Dependency directories
 node_modules
 
-
+# Build Directory
 build
 
-
+# Keep environment variables out of version control
 .env
 
-
+# JWT Secret Keys
 src/_globals/id_rsa_private.pem
 src/_globals/id_rsa_public.pem
-
-
-src/_globals/config/firebaseServiceAccountKey.json

@@ -1,26 +1,18 @@
-import { AppError } from "@exceptions";
-import jwt from "jsonwebtoken";
+import { UnauthenticatedError } from "@exceptions";
+import { db } from "_globals/db";
+import { generateJwt } from "_globals/utils/generatejwt";
+import { compare } from "bcrypt";
 import { AdminLoginInput } from "./admin.schema";
 
-const ADMIN = {
-  email: "admin@gmail.com",
-  password: "admin123",
-};
-
 export const loginAdmin = async (data: AdminLoginInput) => {
-  if (data.email !== ADMIN.email) {
-    throw new AppError("Invalid email or password", 401, true);
-  }
+  const admin = await db.admin.findFirstOrThrow({
+    where: { email: data.email },
+    select: { id: true, email: true, password: true },
+  });
 
-  if (data.password !== ADMIN.password) {
-    throw new AppError("Invalid email or password", 401, true);
-  }
+  const passwordMatch = await compare(data.password, admin.password);
 
-  const token = jwt.sign(
-    { email: ADMIN.email, role: "admin" },
-    process.env.JWT_SECRET || "secret",
-    { expiresIn: "1d" }
-  );
+  if (!passwordMatch) throw new UnauthenticatedError({});
 
-  return { token, admin: { email: ADMIN.email } };
+  return { ...generateJwt(admin.id, "1d") };
 };

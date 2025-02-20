@@ -1,5 +1,5 @@
 import Router from "@koa/router";
-import { upload } from "@middlewares";
+import { upload, validate } from "@middlewares";
 import {
   addPet,
   deletePet,
@@ -8,19 +8,20 @@ import {
   storeImages,
   updatePet,
 } from "./pets.controller";
+import { PetSchema } from "./pets.schema";
 
 const router = new Router();
 
 router.post("/upload", upload.array("images"), storeImages);
 
-router.post("/add-pet", addPet);
+router.post("/", validate(PetSchema), addPet);
 
-router.delete("/pets/:id", deletePet);
+router.delete("/:id", deletePet);
 
-router.patch("/pets/:id", updatePet);
+router.patch("/:id", validate(PetSchema), updatePet);
 
-router.get("/pets/:id", getPetById);
+router.get("/:id", getPetById);
 
-router.get("/pets", getAllPets);
+router.get("/", getAllPets);
 
 export default router;

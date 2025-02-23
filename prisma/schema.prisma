@@ -8,19 +8,20 @@ generator client {
 }
 
 model User {
-    id            String    @id @default(uuid())
-    email         String    @unique
+    id            Int           @id @default(autoincrement())
+    email         String        @unique
     username      String
     password      String
-    phone_number  Int?
+    phoneNumber   Int?
     address       String?
-    verified      Boolean   @default(false)
+    verified      Boolean       @default(false)
     otp           String?
     otpExpiration DateTime?
+    application   Application[]
 }
 
 model Pet {
-    id              String         @id @default(uuid())
+    id              Int            @id @default(autoincrement())
     name            String
     breed           String
     age             Int
@@ -33,12 +34,13 @@ model Pet {
     images          String[]
     personality     Personality?
     adoptionInfo    AdoptionInfo?
+    application     Application?
     createdAt       DateTime       @default(now())
     updatedAt       DateTime       @updatedAt
 }
 
 model Personality {
-    id               String        @id @default(uuid())
+    id               Int           @id @default(autoincrement())
     energyLevel      EnergyLevel
     temperament      Temperament
     training         TrainingLevel
@@ -46,22 +48,23 @@ model Personality {
     petBehavior      String?
     specialTraits    String?
     pet              Pet           @relation(fields: [petId], references: [id], onDelete: Cascade)
-    petId            String        @unique
+    petId            Int           @unique
 }
 
 model AdoptionInfo {
-    id              String          @id @default(uuid())
-    idealHome       String?
-    children        Boolean
-    otherPets       Boolean
-    experienceLevel ExperienceLevel
-    specialNeeds    String?
-    pet             Pet             @relation(fields: [petId], references: [id], onDelete: Cascade)
-    petId           String          @unique
+    id                Int             @id @default(autoincrement())
+    idealHome         String?
+    childrenFriendly  Boolean
+    otherPetsFriendly Boolean
+    experienceLevel   ExperienceLevel
+    specialNeeds      String?
+    pet               Pet             @relation(fields: [petId], references: [id], onDelete: Cascade)
+    petId             Int             @unique
 }
 
 enum AdoptionStatus {
     Available
+    Pending
     Adopted
 }
 
@@ -92,9 +95,58 @@ enum ExperienceLevel {
 }
 
 model Admin {
-    id        String   @id @default(uuid())
+    id        Int      @id @default(autoincrement())
     email     String   @unique
     password  String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model Application {
+    id                Int               @id @default(autoincrement())
+    firstName         String
+    lastName          String
+    email             String
+    address           String
+    householdMembers  String
+    homeOwnership     Boolean
+    petAllowed        Boolean
+    outdoorArea       Boolean
+    aloneHours        Int
+    otherPets         String
+    neuteredPets      Boolean
+    upcomingEvents    String?
+    applicationStatus ApplicationStatus @default(Pending)
+    user              User              @relation(fields: [userId], references: [id])
+    userId            Int
+    pet               Pet               @relation(fields: [petId], references: [id])
+    petId             Int               @unique
+    createdAt         DateTime          @default(now())
+    updatedAt         DateTime          @updatedAt
+}
+
+enum ApplicationStatus {
+    Pending
+    Approved
+    Rejected
+}
+
+model RescueStory {
+    id          Int      @id @default(autoincrement())
+    title       String
+    description String[]
+    imageUrl    String?
+    rescueDate  DateTime
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model SuccessStory {
+    id           Int      @id @default(autoincrement())
+    title        String
+    description  String[]
+    imageUrl     String?
+    adoptionDate DateTime
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
 }

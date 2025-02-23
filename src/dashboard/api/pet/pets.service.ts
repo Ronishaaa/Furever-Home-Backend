@@ -137,7 +137,7 @@ export const getAllPetsService = async (
   return { data, meta: { skip, limit, total } };
 };
 
-export const deletePetService = async (db: PrismaClient, id: string) => {
+export const deletePetService = async (db: PrismaClient, id: number) => {
   try {
     await db.personality.deleteMany({
       where: { petId: id },
@@ -159,7 +159,7 @@ export const deletePetService = async (db: PrismaClient, id: string) => {
 
 export const updatePetService = async (
   db: PrismaClient,
-  id: string,
+  id: number,
   petData: PetInput
 ) => {
   const { personality, adoptionInfo, ...petRest } = petData;
@@ -190,7 +190,7 @@ export const updatePetService = async (
   return updatedData;
 };
 
-export const getPetByIdService = async (db: PrismaClient, id: string) => {
+export const getPetByIdService = async (db: PrismaClient, id: number) => {
   return await db.pet.findUnique({
     where: { id },
     include: {

@@ -33,8 +33,8 @@ export const PetSchema = z.object({
   adoptionInfo: z
     .object({
       idealHome: z.string().optional(),
-      children: z.boolean(),
-      otherPets: z.boolean(),
+      childrenFriendly: z.boolean(),
+      otherPetsFriendly: z.boolean(),
       experienceLevel: z.nativeEnum(ExperienceLevel),
       specialNeeds: z.string().optional(),
     })

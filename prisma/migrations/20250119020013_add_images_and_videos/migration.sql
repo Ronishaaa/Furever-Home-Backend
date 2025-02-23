@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Pet" ALTER COLUMN "images" DROP DEFAULT,
-ALTER COLUMN "videos" DROP DEFAULT;

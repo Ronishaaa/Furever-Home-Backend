@@ -23,7 +23,7 @@ export const registerUser = async (data: RegisterInput) => {
     },
   });
 
-  sendOtpEmail(data.email);
+  await sendOtpEmail(data.email);
   return user;
 };
 
@@ -43,7 +43,7 @@ export const loginUser = async (data: LoginInput) => {
     { id: user.id, email: user.email },
     process.env.JWT_SECRET || "secret",
     {
-      expiresIn: "1d",
+      expiresIn: "7d",
     }
   );
   if (!user.verified) {
@@ -59,12 +59,12 @@ export const verifyOtp = async (email: string, otp: string) => {
     throw new AppError("User not found", 404, true);
   }
 
-  if (user.otp !== otp) {
-    throw new AppError("Invalid OTP", 400, true);
-  }
-
   if (user.otpExpiration && Date.now() > user.otpExpiration.getTime()) {
     throw new AppError("OTP expired", 400, true);
+  }
+
+  if (user.otp !== otp) {
+    throw new AppError("Invalid OTP", 400, true);
   }
 
   await db.user.update({

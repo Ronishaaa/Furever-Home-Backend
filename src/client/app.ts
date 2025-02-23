@@ -1,9 +1,9 @@
 import cors from "@koa/cors";
 import { errorHandler, notFoundHandler } from "_globals/middlewares";
-import apiRouter from "client/api/users/users.routes";
 import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 import helmet from "koa-helmet";
+import apiRouter from "./api";
 
 const app = new Koa();
 

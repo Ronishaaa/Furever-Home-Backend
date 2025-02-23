@@ -11,7 +11,7 @@ export const register = async (ctx: Context) => {
   const data = await registerUser(<RegisterInput>ctx.request.body);
 
   ctx.status = 201;
-  ctx.body = { message: "User register" };
+  ctx.body = { data };
 };
 
 export const login = async (ctx: Context) => {

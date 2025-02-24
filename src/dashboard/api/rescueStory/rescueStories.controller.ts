@@ -46,7 +46,8 @@ export const getRescueStories = async (ctx: Context) => {
 
 export const getRescueStoryById = async (ctx: Context) => {
   const { id } = ctx.params;
-  const data = await Service.getRescueStoryById(ctx.db, id);
+
+  const data = await Service.getRescueStoryById(ctx.db, Number(id));
 
   ctx.status = data ? 200 : 404;
   ctx.body = { data };

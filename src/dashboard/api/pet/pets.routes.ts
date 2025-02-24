@@ -1,27 +1,20 @@
 import Router from "@koa/router";
 import { upload, validate } from "@middlewares";
-import {
-  addPet,
-  deletePet,
-  getAllPets,
-  getPetById,
-  storeImages,
-  updatePet,
-} from "./pets.controller";
+import * as Controller from "./pets.controller";
 import { PetSchema } from "./pets.schema";
 
 const router = new Router();
 
-router.post("/upload", upload.array("images"), storeImages);
+router.post("/upload", upload.array("images"), Controller.storeImages);
 
-router.post("/", validate(PetSchema), addPet);
+router.post("/", validate(PetSchema), Controller.addPet);
 
-router.delete("/:id", deletePet);
+router.delete("/:id", Controller.deletePet);
 
-router.patch("/:id", validate(PetSchema), updatePet);
+router.patch("/:id", validate(PetSchema), Controller.updatePet);
 
-router.get("/:id", getPetById);
+router.get("/:id", Controller.getPetById);
 
-router.get("/", getAllPets);
+router.get("/", Controller.getAllPets);
 
 export default router;

@@ -1,23 +1,30 @@
 import Router from "@koa/router";
 import { adminRouter } from "./admin";
+import { applicationRouter } from "./application";
 import { petRouter } from "./pet";
 import { rescueStoriesRouter } from "./rescueStory";
 import { successStoriesRouter } from "./successStory";
 
 const router = new Router({ prefix: "/api" });
 
-router.use("/pets", petRouter.routes(), petRouter.allowedMethods());
-
 router.use(adminRouter.routes(), adminRouter.allowedMethods());
 
+router.use("/pets", petRouter.routes(), petRouter.allowedMethods());
+
 router.use(
-  "/rescue",
+  "/application",
+  applicationRouter.routes(),
+  applicationRouter.allowedMethods()
+);
+
+router.use(
+  "/rescue-stories",
   rescueStoriesRouter.routes(),
   rescueStoriesRouter.allowedMethods()
 );
 
 router.use(
-  "/success",
+  "/success-stories",
   successStoriesRouter.routes(),
   successStoriesRouter.allowedMethods()
 );

@@ -138,23 +138,19 @@ export const getAllPetsService = async (
 };
 
 export const deletePetService = async (db: PrismaClient, id: number) => {
-  try {
-    await db.personality.deleteMany({
-      where: { petId: id },
-    });
+  await db.personality.deleteMany({
+    where: { petId: id },
+  });
 
-    await db.adoptionInfo.deleteMany({
-      where: { petId: id },
-    });
+  await db.adoptionInfo.deleteMany({
+    where: { petId: id },
+  });
 
-    await db.pet.delete({
-      where: { id },
-    });
+  await db.pet.delete({
+    where: { id },
+  });
 
-    return { message: "Successfully deleted" };
-  } catch (error) {
-    throw new Error("Error deleting pet");
-  }
+  return { message: "Successfully deleted" };
 };
 
 export const updatePetService = async (
@@ -191,7 +187,7 @@ export const updatePetService = async (
 };
 
 export const getPetByIdService = async (db: PrismaClient, id: number) => {
-  return await db.pet.findUnique({
+  return await db.pet.findUniqueOrThrow({
     where: { id },
     include: {
       personality: true,

@@ -45,7 +45,7 @@ export const getSuccessStories = async (ctx: Context) => {
 
 export const getSuccessStoryById = async (ctx: Context) => {
   const { id } = ctx.params;
-  const data = await Service.getSuccessStoryById(ctx.db, id);
+  const data = await Service.getSuccessStoryById(ctx.db, Number(id));
 
   ctx.status = data ? 200 : 404;
   ctx.body = { data };

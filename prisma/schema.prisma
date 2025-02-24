@@ -91,7 +91,6 @@ enum TrainingLevel {
 enum ExperienceLevel {
     FirstTimeOwner
     ExperiencedOwner
-    Both
 }
 
 model Admin {
@@ -106,6 +105,7 @@ model Application {
     id                Int               @id @default(autoincrement())
     firstName         String
     lastName          String
+    phoneNumber       String
     email             String
     address           String
     householdMembers  String
@@ -113,7 +113,7 @@ model Application {
     petAllowed        Boolean
     outdoorArea       Boolean
     aloneHours        Int
-    otherPets         String
+    otherPetsInfo     String
     neuteredPets      Boolean
     upcomingEvents    String?
     applicationStatus ApplicationStatus @default(Pending)
@@ -134,7 +134,7 @@ enum ApplicationStatus {
 model RescueStory {
     id          Int      @id @default(autoincrement())
     title       String
-    description String[]
+    description String
     imageUrl    String?
     rescueDate  DateTime
     createdAt   DateTime @default(now())
@@ -144,7 +144,7 @@ model RescueStory {
 model SuccessStory {
     id           Int      @id @default(autoincrement())
     title        String
-    description  String[]
+    description  String
     imageUrl     String?
     adoptionDate DateTime
     createdAt    DateTime @default(now())

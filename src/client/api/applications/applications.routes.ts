@@ -5,10 +5,6 @@ import { ApplicationSchema } from "./applications.schema";
 
 const router = new Router();
 
-router.post(
-  "/application",
-  validate(ApplicationSchema),
-  Controller.application
-);
+router.post("/", validate(ApplicationSchema), Controller.application);
 
 export default router;

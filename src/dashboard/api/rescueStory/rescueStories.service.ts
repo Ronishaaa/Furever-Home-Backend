@@ -13,7 +13,7 @@ export const getRescueStories = async (db: PrismaClient) => {
 };
 
 export const getRescueStoryById = async (db: PrismaClient, id: number) => {
-  return await db.rescueStory.findUnique({ where: { id } });
+  return await db.rescueStory.findUniqueOrThrow({ where: { id } });
 };
 
 export const updateRescueStory = async (

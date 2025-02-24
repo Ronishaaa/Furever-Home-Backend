@@ -18,12 +18,15 @@ export const sendOtpEmail = async (email: string) => {
     host: "smtp.ethereal.email",
     port: 587,
     auth: {
-      user: "billy.donnelly@ethereal.email",
-      pass: "s3hPaCDHUCYvNxbMG4",
+      user: "pascale.keebler71@ethereal.email",
+      pass: "ZuFFf31s5gjUP478r8",
     },
   });
 
-  await transporter.sendMail({
+  await transporter.verify();
+
+  const info = await transporter.sendMail({
+    from: "pascale.keebler71@ethereal.email",
     to: email,
     subject: "Email Verification OTP",
     html: `<p>Your OTP is: ${otp}</p><p>This OTP will expire in 15 minutes.</p>`,

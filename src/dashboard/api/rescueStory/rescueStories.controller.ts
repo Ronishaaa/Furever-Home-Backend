@@ -57,7 +57,7 @@ export const updateRescueStory = async (ctx: Context) => {
   const { id } = ctx.params;
   const data = await Service.updateRescueStory(
     ctx.db,
-    id,
+    Number(id),
     <RescueStoryInput>ctx.request.body
   );
 
@@ -67,7 +67,7 @@ export const updateRescueStory = async (ctx: Context) => {
 
 export const deleteRescueStory = async (ctx: Context) => {
   const { id } = ctx.params;
-  await Service.deleteRescueStory(ctx.db, id);
+  await Service.deleteRescueStory(ctx.db, Number(id));
 
   ctx.status = 204;
 };

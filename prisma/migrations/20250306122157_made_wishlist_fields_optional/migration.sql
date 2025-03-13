@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Wishlist" ALTER COLUMN "breed" DROP NOT NULL,
+ALTER COLUMN "age" DROP NOT NULL;

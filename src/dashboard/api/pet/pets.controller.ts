@@ -1,10 +1,5 @@
 import { AppError } from "@exceptions";
-import {
-  EnergyLevel,
-  ExperienceLevel,
-  Temperament,
-  TrainingLevel,
-} from "@prisma/client";
+import { EnergyLevel, ExperienceLevel, TrainingLevel } from "@prisma/client";
 import cloudinary from "_globals/utils/cloudinary";
 import { optimizeImage } from "_globals/utils/sharpOptimize";
 import { Context } from "koa";
@@ -44,7 +39,7 @@ export const addPet = async (ctx: Context) => {
 
 export const deletePet = async (ctx: Context) => {
   const { id } = ctx.params;
-  const response = await PetService.deletePetService(ctx.db, id);
+  const response = await PetService.deletePetService(ctx.db, Number(id));
   ctx.status = 200;
   ctx.body = response;
 };
@@ -54,7 +49,7 @@ export const updatePet = async (ctx: Context) => {
 
   const updatedPet = await PetService.updatePetService(
     ctx.db,
-    id,
+    Number(id),
     <PetInput>ctx.request.body
   );
 
@@ -69,10 +64,9 @@ export const getAllPets = async (ctx: Context) => {
     ageMax,
     gender,
     energyLevels,
-    temperaments,
-    type,
     trainingLevels,
     experienceLevels,
+    personality,
     skip = 0,
     limit,
     sortBy = "createdAt",
@@ -84,17 +78,16 @@ export const getAllPets = async (ctx: Context) => {
     ageMin: ageMin ? Number(ageMin) : undefined,
     ageMax: ageMax ? Number(ageMax) : undefined,
     gender: gender?.toString() ?? "",
+    personality: personality
+      ? Array.isArray(personality)
+        ? personality
+        : [personality]
+      : undefined,
     energyLevels: energyLevels
       ? Array.isArray(energyLevels)
         ? (energyLevels as EnergyLevel[])
         : ([energyLevels] as EnergyLevel[])
       : undefined,
-    temperaments: temperaments
-      ? Array.isArray(temperaments)
-        ? (temperaments as Temperament[])
-        : ([temperaments] as Temperament[])
-      : undefined,
-    type: type ? (Array.isArray(type) ? type : [type]) : undefined,
     trainingLevels: trainingLevels
       ? Array.isArray(trainingLevels)
         ? (trainingLevels as TrainingLevel[])
@@ -111,14 +104,13 @@ export const getAllPets = async (ctx: Context) => {
     sortOrder: sortOrder === "desc" ? "desc" : "asc",
   });
 
-  // Return the response with the data and pagination metadata
   ctx.status = 200;
   ctx.body = { data, meta };
 };
 
 export const getPetById = async (ctx: Context) => {
   const { id } = ctx.params;
-  const pet = await PetService.getPetByIdService(ctx.db, id);
+  const pet = await PetService.getPetByIdService(ctx.db, Number(id));
 
   if (!pet) {
     ctx.throw(404, "Pet not found");

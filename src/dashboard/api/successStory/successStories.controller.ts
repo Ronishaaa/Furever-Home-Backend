@@ -55,7 +55,7 @@ export const updateSuccessStory = async (ctx: Context) => {
   const { id } = ctx.params;
   const data = await Service.updateSuccessStory(
     ctx.db,
-    id,
+    Number(id),
     <SuccessStoryInput>ctx.request.body
   );
 

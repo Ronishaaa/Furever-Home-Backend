@@ -1,14 +1,36 @@
 import Router from "@koa/router";
 import { applicationRouter } from "./applications";
+import { rescueStoriesRouter } from "./rescueStory";
+import { successStoriesRouter } from "./successStory";
 import { userRouter } from "./users";
+import { wishlistRouter } from "./wishlist";
 
 const router = new Router({ prefix: "/api" });
 
 router.use(userRouter.routes(), userRouter.allowedMethods());
+
 router.use(
   "/application",
   applicationRouter.routes(),
   applicationRouter.allowedMethods()
+);
+
+router.use(
+  "/wishlist",
+  wishlistRouter.routes(),
+  wishlistRouter.allowedMethods()
+);
+
+router.use(
+  "/rescue-stories",
+  rescueStoriesRouter.routes(),
+  rescueStoriesRouter.allowedMethods()
+);
+
+router.use(
+  "/success-stories",
+  successStoriesRouter.routes(),
+  successStoriesRouter.allowedMethods()
 );
 
 export default router;

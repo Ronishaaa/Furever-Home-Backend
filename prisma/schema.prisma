@@ -12,43 +12,36 @@ model User {
     email         String        @unique
     username      String
     password      String
-    phoneNumber   Int?
+    phoneNumber   String?
     address       String?
     verified      Boolean       @default(false)
     otp           String?
     otpExpiration DateTime?
     application   Application[]
+    wishlist      Wishlist?
 }
 
 model Pet {
-    id              Int            @id @default(autoincrement())
-    name            String
-    breed           String
-    age             Int
-    gender          String
-    color           String?
-    healthCondition String?
-    vaccination     Boolean
-    adoptionStatus  AdoptionStatus
-    type            String
-    images          String[]
-    personality     Personality?
-    adoptionInfo    AdoptionInfo?
-    application     Application?
-    createdAt       DateTime       @default(now())
-    updatedAt       DateTime       @updatedAt
-}
-
-model Personality {
-    id               Int           @id @default(autoincrement())
+    id               Int            @id @default(autoincrement())
+    name             String
+    breed            String
+    age              Int
+    gender           String
+    color            String?
+    healthCondition  String?
+    vaccination      Boolean
+    description      String?
+    adoptionStatus   AdoptionStatus
+    images           String[]
+    personality      String[]
     energyLevel      EnergyLevel
-    temperament      Temperament
-    training         TrainingLevel
+    trainingLevel    TrainingLevel
     strangerBehavior String?
-    petBehavior      String?
     specialTraits    String?
-    pet              Pet           @relation(fields: [petId], references: [id], onDelete: Cascade)
-    petId            Int           @unique
+    adoptionInfo     AdoptionInfo?
+    application      Application?
+    createdAt        DateTime       @default(now())
+    updatedAt        DateTime       @updatedAt
 }
 
 model AdoptionInfo {
@@ -135,7 +128,7 @@ model RescueStory {
     id          Int      @id @default(autoincrement())
     title       String
     description String
-    imageUrl    String?
+    imageUrl    String[]
     rescueDate  DateTime
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
@@ -145,8 +138,19 @@ model SuccessStory {
     id           Int      @id @default(autoincrement())
     title        String
     description  String
-    imageUrl     String?
+    imageUrl     String[]
     adoptionDate DateTime
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
+}
+
+model Wishlist {
+    id          Int     @id @default(autoincrement())
+    userId      Int     @unique
+    breed       String?
+    age         Int?
+    energyLevel String?
+    gender      String
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

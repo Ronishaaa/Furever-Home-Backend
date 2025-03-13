@@ -3,21 +3,16 @@ import {
   ExperienceLevel,
   Prisma,
   PrismaClient,
-  Temperament,
   TrainingLevel,
 } from "@prisma/client";
 import { PetInput } from "./pets.schema";
 
 export const addPetService = async (db: PrismaClient, petData: PetInput) => {
-  const { personality, adoptionInfo, ...petRest } = petData;
+  const { adoptionInfo, ...petRest } = petData;
 
   const data: Prisma.PetCreateInput = {
     ...petRest,
-    personality: personality
-      ? {
-          create: personality,
-        }
-      : undefined,
+
     adoptionInfo: adoptionInfo
       ? {
           create: adoptionInfo,
@@ -28,12 +23,46 @@ export const addPetService = async (db: PrismaClient, petData: PetInput) => {
   const newPet = await db.pet.create({
     data,
     include: {
-      personality: true,
       adoptionInfo: true,
     },
   });
 
+  const matchingWishlists = await findMatchingPets(db, newPet);
+
   return newPet;
+};
+
+export interface WISHLIST {
+  age?: number;
+  breed?: string;
+  energyLevel?: EnergyLevel;
+  gender: string;
+}
+
+export const findMatchingPets = async (
+  db: PrismaClient,
+  { age, breed, energyLevel, gender }: WISHLIST
+) => {
+  const conditions: Prisma.PetWhereInput[] = [];
+
+  if (age) conditions.push({ age });
+  if (breed) conditions.push({ breed });
+  if (energyLevel) conditions.push({ energyLevel });
+  if (gender) conditions.push({ gender });
+
+  return await db.pet.findMany({
+    where: { AND: conditions },
+    select: {
+      id: true,
+      name: true,
+      images: true,
+      breed: true,
+      age: true,
+      gender: true,
+      energyLevel: true,
+      adoptionStatus: true,
+    },
+  });
 };
 
 export interface FILTERS {
@@ -42,7 +71,7 @@ export interface FILTERS {
   ageMax?: number;
   gender?: string;
   energyLevels?: EnergyLevel[];
-  temperaments?: Temperament[];
+  personality?: string[];
   type?: string[];
   trainingLevels?: TrainingLevel[];
   experienceLevels?: ExperienceLevel[];
@@ -60,8 +89,7 @@ export const getAllPetsService = async (
     ageMax,
     gender,
     energyLevels,
-    temperaments,
-    type,
+    personality,
     trainingLevels,
     experienceLevels,
     skip,
@@ -98,22 +126,17 @@ export const getAllPetsService = async (
 
   // Apply energy level filter
   if (energyLevels) {
-    conditions.push({ personality: { energyLevel: { in: energyLevels } } });
+    conditions.push({ energyLevel: { in: energyLevels } });
   }
 
   // Apply temperament filter
-  if (temperaments) {
-    conditions.push({ personality: { temperament: { in: temperaments } } });
-  }
-
-  // Apply type filter
-  if (type) {
-    conditions.push({ type: { in: type } });
+  if (personality) {
+    conditions.push({ personality: { hasSome: personality } });
   }
 
   // Apply training level filter
   if (trainingLevels) {
-    conditions.push({ personality: { training: { in: trainingLevels } } });
+    conditions.push({ trainingLevel: { in: trainingLevels } });
   }
 
   // Apply experience level filter
@@ -129,7 +152,7 @@ export const getAllPetsService = async (
       orderBy: { [sortBy]: sortOrder },
       skip,
       take: limit,
-      include: { personality: true, adoptionInfo: true },
+      include: { adoptionInfo: true },
     }),
     db.pet.count({ where: { AND: conditions } }),
   ]);
@@ -138,10 +161,6 @@ export const getAllPetsService = async (
 };
 
 export const deletePetService = async (db: PrismaClient, id: number) => {
-  await db.personality.deleteMany({
-    where: { petId: id },
-  });
-
   await db.adoptionInfo.deleteMany({
     where: { petId: id },
   });
@@ -158,15 +177,11 @@ export const updatePetService = async (
   id: number,
   petData: PetInput
 ) => {
-  const { personality, adoptionInfo, ...petRest } = petData;
+  const { adoptionInfo, ...petRest } = petData;
 
   const data: any = {
     ...petRest,
-    personality: personality
-      ? {
-          update: personality,
-        }
-      : undefined,
+
     adoptionInfo: adoptionInfo
       ? {
           update: adoptionInfo,
@@ -178,7 +193,6 @@ export const updatePetService = async (
     where: { id },
     data,
     include: {
-      personality: true,
       adoptionInfo: true,
     },
   });
@@ -190,7 +204,6 @@ export const getPetByIdService = async (db: PrismaClient, id: number) => {
   return await db.pet.findUniqueOrThrow({
     where: { id },
     include: {
-      personality: true,
       adoptionInfo: true,
     },
   });

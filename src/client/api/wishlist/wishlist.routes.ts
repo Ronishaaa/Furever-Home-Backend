@@ -9,6 +9,6 @@ router.post("/", validate(WishlistSchema), Controller.addOrUpdateWishlist);
 
 router.delete("/:id", Controller.deleteWishlist);
 
-router.get("/", Controller.getWishlist);
+router.get("/:userId", Controller.getWishlist);
 
 export default router;

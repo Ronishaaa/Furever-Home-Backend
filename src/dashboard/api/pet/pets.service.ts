@@ -5,6 +5,7 @@ import {
   PrismaClient,
   TrainingLevel,
 } from "@prisma/client";
+import { io } from "dashboard";
 import { PetInput } from "./pets.schema";
 
 export const addPetService = async (db: PrismaClient, petData: PetInput) => {
@@ -29,11 +30,23 @@ export const addPetService = async (db: PrismaClient, petData: PetInput) => {
 
   const matchingWishlists = await findMatchingPets(db, newPet);
 
-  return newPet;
+  if (matchingWishlists.length > 0) {
+    matchingWishlists.forEach((wishlist) => {
+      if (wishlist.user?.socketId) {
+        io.to(wishlist.user.socketId).emit("newPetMatch", {
+          message: "A new pet matches your wishlist!",
+          pet: newPet,
+        });
+      }
+    });
+  }
+
+  return { newPet, matchingWishlists };
 };
 
 export interface WISHLIST {
-  age?: number;
+  ageMin?: number;
+  ageMax?: number;
   breed?: string;
   energyLevel?: EnergyLevel;
   gender: string;
@@ -41,30 +54,41 @@ export interface WISHLIST {
 
 export const findMatchingPets = async (
   db: PrismaClient,
-  { age, breed, energyLevel, gender }: WISHLIST
+  { ageMax, ageMin, breed, energyLevel, gender }: WISHLIST
 ) => {
-  const conditions: Prisma.PetWhereInput[] = [];
+  const conditions: Prisma.WishlistWhereInput[] = [];
 
-  if (age) conditions.push({ age });
+  if (ageMin) {
+    conditions.push({ ageMin: { gte: Number(ageMin) } });
+  }
+
+  if (ageMax) {
+    conditions.push({ ageMax: { lte: Number(ageMax) } });
+  }
+
   if (breed) conditions.push({ breed });
   if (energyLevel) conditions.push({ energyLevel });
   if (gender) conditions.push({ gender });
 
-  return await db.pet.findMany({
-    where: { AND: conditions },
+  return await db.wishlist.findMany({
+    where: { OR: conditions },
     select: {
       id: true,
-      name: true,
-      images: true,
       breed: true,
-      age: true,
+      ageMin: true,
+      ageMax: true,
       gender: true,
       energyLevel: true,
-      adoptionStatus: true,
+      userId: true,
+      user: {
+        select: {
+          id: true,
+          socketId: true,
+        },
+      },
     },
   });
 };
-
 export interface FILTERS {
   searchTerm: string;
   ageMin?: number;

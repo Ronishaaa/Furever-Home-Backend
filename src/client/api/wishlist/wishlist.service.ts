@@ -7,51 +7,87 @@ export const addOrUpdateWishlist = async (
 ) => {
   const existingWishlist = await db.wishlist.findUnique({
     where: { userId: data.userId },
+    include: { MatchedPets: { include: { pet: true } } },
   });
 
   let wishlist;
   if (existingWishlist) {
     wishlist = await db.wishlist.update({
       where: { userId: data.userId },
-      data,
+      data: {
+        breed: data.breed,
+        ageMax: data.ageMax,
+        ageMin: data.ageMin,
+        energyLevel: data.energyLevel,
+        gender: data.gender,
+      },
+      include: { MatchedPets: { include: { pet: true } } },
     });
   } else {
-    wishlist = await db.wishlist.create({ data });
+    wishlist = await db.wishlist.create({
+      data: {
+        userId: data.userId,
+        breed: data.breed,
+        ageMax: data.ageMax,
+        ageMin: data.ageMin,
+        energyLevel: data.energyLevel,
+        gender: data.gender,
+      },
+      include: { MatchedPets: { include: { pet: true } } },
+    });
   }
 
+  // Find matching pets
   const matchingPets = await findMatchingPets(db, {
-    age: wishlist.age ?? undefined,
-    breed: wishlist.breed ?? undefined,
-    energyLevel: (wishlist.energyLevel as EnergyLevel) ?? undefined,
-    gender: wishlist.gender ?? undefined,
+    ageMax: data.ageMax,
+    ageMin: data.ageMin,
+    breed: data.breed,
+    energyLevel: data.energyLevel as EnergyLevel,
+    gender: data.gender,
   });
 
-  return { wishlist, matchingPets };
+  await db.matchedPets.createMany({
+    data: matchingPets.map((pet) => ({
+      wishlistId: wishlist.id,
+      petId: pet.id,
+    })),
+    skipDuplicates: true,
+  });
+
+  return { ...wishlist, pets: matchingPets };
 };
 
 export const getWishlist = async (db: PrismaClient, userId: number) => {
-  return await db.wishlist.findUnique({ where: { userId } });
-};
-
-export const deleteWishlist = async (db: PrismaClient, userId: number) => {
-  return await db.wishlist.delete({
+  return await db.wishlist.findFirst({
     where: { userId },
+    include: {
+      MatchedPets: { include: { pet: true } },
+    },
   });
 };
 
 export interface FILTERS {
-  age?: number | null;
+  ageMin?: number | null;
+  ageMax?: number | null;
   breed?: string | null;
   energyLevel?: EnergyLevel | null;
   gender?: string;
 }
+
 export const findMatchingPets = async (
   db: PrismaClient,
-  { age, breed, energyLevel, gender }: FILTERS
+  { ageMax, ageMin, breed, energyLevel, gender }: FILTERS
 ) => {
   const conditions: Prisma.PetWhereInput[] = [];
 
-  if (age) conditions.push({ age });
+  if (ageMin) {
+    conditions.push({ age: { gte: Number(ageMin) } });
+  }
+
+  if (ageMax) {
+    conditions.push({ age: { lte: Number(ageMax) } });
+  }
+
   if (breed) conditions.push({ breed });
   if (energyLevel) conditions.push({ energyLevel });
   if (gender) conditions.push({ gender });

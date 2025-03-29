@@ -4,34 +4,9 @@ import Koa from "koa";
 import koaBody from "koa-body";
 import bodyParser from "koa-bodyparser";
 import helmet from "koa-helmet";
-import { createServer } from "node:http";
-import { Server } from "socket.io";
 import apiRouter from "./api";
 
 const app = new Koa();
-
-const server = createServer(app.callback());
-
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
-
-io.on("connection", (socket) => {
-  console.log("a user connected");
-
-  socket.on("customEvent", (data) => {
-    console.log("Received data:", data);
-    io.emit("customEventResponse", { message: "Hello from server!" });
-  });
-
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
-  });
-});
 
 app.use(async (ctx, next) => {
   try {

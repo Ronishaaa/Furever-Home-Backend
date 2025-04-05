@@ -7,7 +7,6 @@ const router = new Router();
 
 router.post("/", validate(WishlistSchema), Controller.addOrUpdateWishlist);
 
-router.delete("/:id", Controller.deleteWishlist);
 
 router.get("/:userId", Controller.getWishlist);
 

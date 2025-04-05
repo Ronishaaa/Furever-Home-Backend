@@ -7,7 +7,7 @@ export const addOrUpdateWishlist = async (
 ) => {
   const existingWishlist = await db.wishlist.findUnique({
     where: { userId: data.userId },
-    include: { MatchedPets: { include: { pet: true } } },
+    include: { MatchedPets: true },
   });
 
   let wishlist;
@@ -21,7 +21,11 @@ export const addOrUpdateWishlist = async (
         energyLevel: data.energyLevel,
         gender: data.gender,
       },
-      include: { MatchedPets: { include: { pet: true } } },
+      include: { MatchedPets: true },
+    });
+
+    await db.matchedPets.deleteMany({
+      where: { wishlistId: wishlist.id },
     });
   } else {
     wishlist = await db.wishlist.create({
@@ -33,11 +37,10 @@ export const addOrUpdateWishlist = async (
         energyLevel: data.energyLevel,
         gender: data.gender,
       },
-      include: { MatchedPets: { include: { pet: true } } },
+      include: { MatchedPets: true },
     });
   }
 
-  // Find matching pets
   const matchingPets = await findMatchingPets(db, {
     ageMax: data.ageMax,
     ageMin: data.ageMin,
@@ -46,13 +49,15 @@ export const addOrUpdateWishlist = async (
     gender: data.gender,
   });
 
-  await db.matchedPets.createMany({
-    data: matchingPets.map((pet) => ({
-      wishlistId: wishlist.id,
-      petId: pet.id,
-    })),
-    skipDuplicates: true,
-  });
+  if (matchingPets.length > 0) {
+    await db.matchedPets.createMany({
+      data: matchingPets.map((pet) => ({
+        wishlistId: wishlist.id,
+        petId: pet.id,
+      })),
+      skipDuplicates: true,
+    });
+  }
 
   return { ...wishlist, pets: matchingPets };
 };

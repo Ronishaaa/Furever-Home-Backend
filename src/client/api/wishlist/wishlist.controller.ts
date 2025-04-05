@@ -17,11 +17,3 @@ export const getWishlist = async (ctx: Context) => {
   ctx.status = 200;
   ctx.body = { data: wishlist };
 };
-
-export const deleteWishlist = async (ctx: Context) => {
-  const { userId } = ctx.params;
-  await WishlistService.deleteWishlist(ctx.db, Number(userId));
-
-  ctx.status = 200;
-  ctx.body = { message: "Wishlist deleted successfully" };
-};

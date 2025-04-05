@@ -2,7 +2,19 @@ import { PrismaClient } from "@prisma/client";
 
 export const getAllApplicationsService = async (db: PrismaClient) => {
   const [data, total] = await db.$transaction([
-    db.application.findMany({ orderBy: { createdAt: "desc" } }),
+    db.application.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        pet: {
+          select: {
+            id: true,
+            name: true,
+            images: true,
+            breed: true,
+          },
+        },
+      },
+    }),
     db.application.count(),
   ]);
 
@@ -15,6 +27,18 @@ export const getApplicationByIdService = async (
 ) => {
   return await db.application.findUniqueOrThrow({
     where: { id },
+    include: {
+      pet: {
+        select: {
+          id: true,
+          name: true,
+          images: true,
+          breed: true,
+          age: true,
+          gender: true,
+        },
+      },
+    },
   });
 };
 

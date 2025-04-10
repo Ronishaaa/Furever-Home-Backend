@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { ApplicationInput } from "./application.schema";
 
 export const getAllApplicationsService = async (db: PrismaClient) => {
   const [data, total] = await db.$transaction([
@@ -51,4 +52,29 @@ export const deleteApplicationService = async (
   });
 
   return { message: "Successfully deleted application" };
+};
+
+export const updateApplicationService = async (
+  db: PrismaClient,
+  id: number,
+  applicationData: ApplicationInput
+) => {
+  const updatedApplication = await db.application.update({
+    where: { id },
+    data: applicationData,
+    include: {
+      pet: {
+        select: {
+          id: true,
+          name: true,
+          images: true,
+          breed: true,
+          age: true,
+          gender: true,
+        },
+      },
+    },
+  });
+
+  return updatedApplication;
 };

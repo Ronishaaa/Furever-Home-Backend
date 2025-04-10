@@ -21,6 +21,7 @@ model User {
     notification  Notification[]
     wishlist      Wishlist?
     socketId      String?
+    Donation      Donation[]
 }
 
 model Pet {
@@ -186,4 +187,21 @@ model MatchedPets {
     updatedAt  DateTime @updatedAt
 
     @@id([wishlistId, petId])
+}
+
+model Donation {
+    id            Int       @id @default(autoincrement())
+    amount        Float
+    name          String
+    email         String
+    phone         String
+    message       String?
+    pidx          String    @unique
+    status        String
+    transactionId String?
+    completedAt   DateTime?
+    userId        Int?
+    user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
 }

@@ -1,4 +1,5 @@
 import { Context } from "koa";
+import { ApplicationInput } from "./application.schema";
 import * as Service from "./application.service";
 
 export const getAllApplication = async (ctx: Context) => {
@@ -25,4 +26,17 @@ export const deleteApplication = async (ctx: Context) => {
   const response = await Service.deleteApplicationService(ctx.db, id);
   ctx.status = 200;
   ctx.body = response;
+};
+
+export const updateApplication = async (ctx: Context) => {
+  const { id } = ctx.params;
+
+  const updatedApplication = await Service.updateApplicationService(
+    ctx.db,
+    Number(id),
+    <ApplicationInput>ctx.request.body
+  );
+
+  ctx.status = 200;
+  ctx.body = { application: updatedApplication };
 };

@@ -31,21 +31,24 @@ export const addPetService = async (db: PrismaClient, petData: PetInput) => {
   const matchingWishlists = await findMatchingPets(db, newPet);
 
   if (matchingWishlists.length > 0) {
-    matchingWishlists.forEach(async (wishlist) => {
+    matchingWishlists.forEach((wishlist) => {
       if (wishlist.user?.socketId) {
         io.to(wishlist.user.socketId).emit("newPetMatch", {
           message: "A new pet matches your wishlist!",
           pet: newPet,
         });
       }
+    });
 
-      await db.matchedPets.create({
-        data: {
+    if (matchingWishlists.length > 0) {
+      await db.matchedPets.createMany({
+        data: matchingWishlists.map((wishlist) => ({
           wishlistId: wishlist.id,
           petId: newPet.id,
-        },
+        })),
+        skipDuplicates: true,
       });
-    });
+    }
   }
 
   return { newPet, matchingWishlists };

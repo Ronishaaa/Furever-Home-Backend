@@ -48,6 +48,15 @@ export const addPetService = async (db: PrismaClient, petData: PetInput) => {
         })),
         skipDuplicates: true,
       });
+
+      await db.notification.createMany({
+        data: matchingWishlists.map((wishlist) => ({
+          userId: wishlist.userId,
+          wishlistId: wishlist.id,
+          petId: newPet.id,
+          message: `A new pet ${newPet.name} matches your wishlist criteria!`,
+        })),
+      });
     }
   }
 

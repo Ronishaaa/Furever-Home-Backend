@@ -55,7 +55,15 @@ export const addOrUpdateWishlist = async (
         wishlistId: wishlist.id,
         petId: pet.id,
       })),
-      skipDuplicates: true,
+    });
+
+    await db.notification.createMany({
+      data: matchingPets.map((pet) => ({
+        userId: data.userId,
+        wishlistId: wishlist.id,
+        petId: pet.id,
+        message: `A new pet ${pet.name} matches your wishlist criteria!`,
+      })),
     });
   }
 

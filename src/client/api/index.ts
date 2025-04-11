@@ -1,6 +1,7 @@
 import Router from "@koa/router";
 import { applicationRouter } from "./applications";
 import { donationRouter } from "./donation";
+import { notificationRouter } from "./notification";
 import { petRouter } from "./pet";
 import { rescueStoriesRouter } from "./rescueStory";
 import { successStoriesRouter } from "./successStory";
@@ -17,6 +18,12 @@ router.use(
   "/application",
   applicationRouter.routes(),
   applicationRouter.allowedMethods()
+);
+
+router.use(
+  "/notifications",
+  notificationRouter.routes(),
+  notificationRouter.allowedMethods()
 );
 
 router.use(

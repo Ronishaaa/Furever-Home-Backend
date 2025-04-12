@@ -17,9 +17,10 @@ export const sendOtpEmail = async (email: string) => {
   const transporter = nodemailer.createTransport({
     host: "smtp.ethereal.email",
     port: 587,
+    secure: false,
     auth: {
-      user: "pascale.keebler71@ethereal.email",
-      pass: "ZuFFf31s5gjUP478r8",
+      user: "raphael.konopelski@ethereal.email",
+      pass: "UhpFSUdH6XKswtWM1u",
     },
   });
 
@@ -29,6 +30,11 @@ export const sendOtpEmail = async (email: string) => {
     from: "pascale.keebler71@ethereal.email",
     to: email,
     subject: "Email Verification OTP",
-    html: `<p>Your OTP is: ${otp}</p><p>This OTP will expire in 15 minutes.</p>`,
+    html: `<p>Your OTP is: <strong>${otp}</strong></p><p>This OTP will expire in 15 minutes.</p>`,
   });
+
+  console.log(
+    "OTP email sent. Preview URL:",
+    nodemailer.getTestMessageUrl(info)
+  );
 };

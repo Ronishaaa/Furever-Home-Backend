@@ -3,6 +3,7 @@ import { LoginInput, RegisterInput, UpdateSocketInput } from "./users.schema";
 import {
   loginUser,
   registerUser,
+  resendVerificationEmail,
   updateSocket,
   verifyOtp,
   verifyToken,
@@ -51,7 +52,6 @@ export const verifyOtpController = async (ctx: Context) => {
 };
 
 export const verify = async (ctx: Context) => {
-  // Extract the token from the Authorization header
   const token = ctx.headers.authorization?.split(" ")[1];
 
   if (!token) {
@@ -60,7 +60,6 @@ export const verify = async (ctx: Context) => {
     return;
   }
 
-  // Verify the token and get the user data
   const { valid, user } = await verifyToken(token);
 
   if (valid) {
@@ -70,4 +69,16 @@ export const verify = async (ctx: Context) => {
     ctx.status = 401;
     ctx.body = { valid: false, message: "Invalid token" };
   }
+};
+
+export const resendVerification = async (ctx: Context) => {
+  const { email } = ctx.request.body as { email: string };
+
+  if (!email) {
+    ctx.throw(400, "Email is required");
+  }
+
+  const result = await resendVerificationEmail(email);
+  ctx.status = 200;
+  ctx.body = result;
 };

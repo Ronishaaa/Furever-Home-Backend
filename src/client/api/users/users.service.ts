@@ -127,3 +127,19 @@ export const verifyToken = async (token: string) => {
     throw new AppError("Invalid token", 401, true);
   }
 };
+
+export const resendVerificationEmail = async (email: string) => {
+  const user = await db.user.findUnique({ where: { email } });
+
+  if (!user) {
+    throw new AppError("User not found", 404, true);
+  }
+
+  if (user.verified) {
+    throw new AppError("Email already verified", 400, true);
+  }
+
+  await sendOtpEmail(email);
+
+  return { message: "Verification email resent successfully" };
+};

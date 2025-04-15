@@ -32,3 +32,16 @@ export const UpdateSocketSchema = z.object({
 });
 
 export type UpdateSocketInput = z.infer<typeof UpdateSocketSchema>;
+
+export const UpdateUserSchema = z.object({
+  username: z
+    .string()
+    .trim()
+    .min(1, { message: "Username is required" })
+    .optional(),
+  email: z.string().trim().email({ message: "Invalid email" }).optional(),
+  phoneNumber: z.string().trim().optional(),
+  address: z.string().trim().optional(),
+});
+
+export type UpdateUserInput = z.infer<typeof UpdateUserSchema>;

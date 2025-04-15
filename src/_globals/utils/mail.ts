@@ -1,40 +1,47 @@
-import crypto from "crypto";
-import nodemailer from "nodemailer";
-import { db } from "../db";
+// utils/mail.ts
+import { createTransport, getTestMessageUrl } from "nodemailer";
 
-export const sendOtpEmail = async (email: string) => {
-  const otp = crypto.randomInt(100000, 999999).toString();
-  const expirationTime = Date.now() + 15 * 60 * 1000;
+export const transporter = createTransport({
+  host: "smtp.ethereal.email",
+  port: 587,
+  secure: false,
+  auth: {
+    user: "raphael.konopelski@ethereal.email",
+    pass: "UhpFSUdH6XKswtWM1u",
+  },
+});
 
-  const user = await db.user.findUnique({ where: { email } });
-  if (!user) throw new Error("User not found.");
+interface SendMailParams {
+  to: string | string[];
+  subject: string;
+  text?: string;
+  html: string;
+  from?: string;
+}
 
-  await db.user.update({
-    where: { email },
-    data: { otp, otpExpiration: new Date(expirationTime) },
-  });
+export const sendMail = async ({
+  to,
+  subject,
+  text = "HTML not supported",
+  html,
+  from = "pascale.keebler71@ethereal.email",
+}: SendMailParams) => {
+  try {
+    await transporter.verify();
 
-  const transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false,
-    auth: {
-      user: "raphael.konopelski@ethereal.email",
-      pass: "UhpFSUdH6XKswtWM1u",
-    },
-  });
+    const info = await transporter.sendMail({
+      from,
+      to,
+      subject,
+      text,
+      html,
+    });
 
-  await transporter.verify();
+    console.log("Preview URL:", getTestMessageUrl(info));
 
-  const info = await transporter.sendMail({
-    from: "pascale.keebler71@ethereal.email",
-    to: email,
-    subject: "Email Verification OTP",
-    html: `<p>Your OTP is: <strong>${otp}</strong></p><p>This OTP will expire in 15 minutes.</p>`,
-  });
-
-  console.log(
-    "OTP email sent. Preview URL:",
-    nodemailer.getTestMessageUrl(info)
-  );
+    return info;
+  } catch (error) {
+    console.error("Email sending failed:", error);
+    throw new Error("Failed to send email");
+  }
 };

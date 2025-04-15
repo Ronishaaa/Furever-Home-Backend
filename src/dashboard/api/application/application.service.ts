@@ -1,5 +1,42 @@
-import { PrismaClient } from "@prisma/client";
+import { ApplicationStatus, PrismaClient } from "@prisma/client";
+import { sendMail } from "@utils";
 import { ApplicationInput } from "./application.schema";
+
+interface DecisionEmailParams {
+  to: string;
+  petName: string;
+  status: ApplicationStatus;
+}
+
+export const sendApplicationDecisionEmail = async ({
+  to,
+  petName,
+  status,
+}: DecisionEmailParams) => {
+  const isApproved = status === "Approved";
+
+  const subject = `Your Pet Adoption Application has been ${
+    isApproved ? "Approved" : "Rejected"
+  }`;
+
+  const html = isApproved
+    ? `
+      <p>Congratulations! 🎉</p>
+      <p>Your application to adopt <strong>${petName}</strong> has been <strong>approved</strong>.</p>
+      <p>Our team will contact you soon for the next steps.</p>
+    `
+    : `
+      <p>We're sorry to inform you.</p>
+      <p>Your application to adopt <strong>${petName}</strong> has been <strong>rejected</strong>.</p>
+      <p>Please feel free to explore other pets and try again.</p>
+    `;
+
+  await sendMail({
+    to,
+    subject,
+    html,
+  });
+};
 
 export const getAllApplicationsService = async (db: PrismaClient) => {
   const [data, total] = await db.$transaction([
@@ -63,6 +100,7 @@ export const updateApplicationService = async (
     where: { id },
     data: applicationData,
     include: {
+      user: true,
       pet: {
         select: {
           id: true,
@@ -74,6 +112,24 @@ export const updateApplicationService = async (
         },
       },
     },
+  });
+
+  if (applicationData.applicationStatus === "Approved") {
+    await db.pet.update({
+      where: { id: updatedApplication.pet.id },
+      data: { adoptionStatus: "Adopted" },
+    });
+  } else if (applicationData.applicationStatus === "Rejected") {
+    await db.pet.update({
+      where: { id: updatedApplication.pet.id },
+      data: { adoptionStatus: "Available" },
+    });
+  }
+
+  await sendApplicationDecisionEmail({
+    to: updatedApplication.user.email,
+    petName: updatedApplication.pet.name,
+    status: applicationData.applicationStatus,
   });
 
   return updatedApplication;

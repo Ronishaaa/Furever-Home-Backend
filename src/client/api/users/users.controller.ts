@@ -1,10 +1,17 @@
 import { Context } from "koa";
-import { LoginInput, RegisterInput, UpdateSocketInput } from "./users.schema";
 import {
+  LoginInput,
+  RegisterInput,
+  UpdateSocketInput,
+  UpdateUserInput,
+} from "./users.schema";
+import {
+  getUser,
   loginUser,
   registerUser,
   resendVerificationEmail,
   updateSocket,
+  updateUser,
   verifyOtp,
   verifyToken,
 } from "./users.service";
@@ -81,4 +88,26 @@ export const resendVerification = async (ctx: Context) => {
   const result = await resendVerificationEmail(email);
   ctx.status = 200;
   ctx.body = result;
+};
+
+export const getUserController = async (ctx: Context) => {
+  const { userId } = ctx.params;
+
+  const user = await getUser(ctx.db, Number(userId));
+
+  ctx.status = 200;
+  ctx.body = { data: user };
+};
+
+export const updateUserController = async (ctx: Context) => {
+  const { userId } = ctx.params;
+
+  const updatedUser = await updateUser(
+    ctx.db,
+    Number(userId),
+    <UpdateUserInput>ctx.request.body
+  );
+
+  ctx.status = 200;
+  ctx.body = { data: updatedUser };
 };

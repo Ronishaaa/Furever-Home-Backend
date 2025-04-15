@@ -5,6 +5,7 @@ import {
   LoginSchema,
   RegisterSchema,
   UpdateSocketSchema,
+  UpdateUserSchema,
 } from "./users.schema";
 
 const router = new Router();
@@ -18,6 +19,12 @@ router.patch(
   "/socket/:userId",
   validate(UpdateSocketSchema),
   Controller.updateSocketController
+);
+router.get("/user/:userId", Controller.getUserController);
+router.patch(
+  "/:userId",
+  validate(UpdateUserSchema),
+  Controller.updateUserController
 );
 
 export default router;

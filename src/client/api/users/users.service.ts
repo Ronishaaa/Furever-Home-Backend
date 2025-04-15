@@ -1,10 +1,16 @@
 import { AppError } from "@exceptions";
+import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "@utils";
 import { db } from "_globals/db";
-import { sendOtpEmail } from "_globals/utils/mail";
+import { sendOtpEmail } from "_globals/utils/otp";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { LoginInput, RegisterInput, UpdateSocketInput } from "./users.schema";
+import {
+  LoginInput,
+  RegisterInput,
+  UpdateSocketInput,
+  UpdateUserInput,
+} from "./users.schema";
 
 export const registerUser = async (data: RegisterInput) => {
   const existingUser = await db.user.findUnique({
@@ -96,13 +102,11 @@ export const verifyToken = async (token: string) => {
   }
 
   try {
-    // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret") as {
       id: number;
       email: string;
     };
 
-    // Fetch the user from the database
     const user = await db.user.findUnique({ where: { id: decoded.id } });
 
     if (!user) {
@@ -131,15 +135,36 @@ export const verifyToken = async (token: string) => {
 export const resendVerificationEmail = async (email: string) => {
   const user = await db.user.findUnique({ where: { email } });
 
-  if (!user) {
-    throw new AppError("User not found", 404, true);
-  }
-
-  if (user.verified) {
-    throw new AppError("Email already verified", 400, true);
-  }
-
   await sendOtpEmail(email);
 
   return { message: "Verification email resent successfully" };
+};
+
+export const getUser = async (db: PrismaClient, id: number) => {
+  return await db.user.findUnique({
+    where: { id },
+    include: {
+      application: {
+        select: {
+          id: true,
+          pet: true,
+          applicationStatus: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
+};
+
+export const updateUser = async (
+  db: PrismaClient,
+  id: number,
+  userData: UpdateUserInput
+) => {
+  const updatedUser = await db.user.update({
+    where: { id },
+    data: userData,
+  });
+
+  return updatedUser;
 };

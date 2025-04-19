@@ -8,8 +8,26 @@ export const addRescueStory = async (
   return await db.rescueStory.create({ data });
 };
 
-export const getRescueStories = async (db: PrismaClient) => {
-  return await db.rescueStory.findMany({ orderBy: { createdAt: "desc" } });
+export const getRescueStories = async (
+  db: PrismaClient,
+  {
+    skip,
+    limit,
+  }: {
+    skip: number;
+    limit: number;
+  }
+) => {
+  const [data, total] = await db.$transaction([
+    db.rescueStory.findMany({
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+    }),
+    db.rescueStory.count(),
+  ]);
+
+  return { data, meta: { skip, limit, total } };
 };
 
 export const getRescueStoryById = async (db: PrismaClient, id: number) => {

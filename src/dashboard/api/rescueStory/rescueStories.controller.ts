@@ -10,7 +10,6 @@ export const storeImagesForRescueStories = async (ctx: Context) => {
     throw new AppError("No files uploaded", 400, true);
   }
 
-  // Process images uploaded for the success stories
   const uploadResults = await Promise.all(
     ctx.request.files.map(async (file) => {
       const optimizedFile = await optimizeImage(file.buffer, file.mimetype);
@@ -38,10 +37,15 @@ export const addRescueStory = async (ctx: Context) => {
 };
 
 export const getRescueStories = async (ctx: Context) => {
-  const data = await Service.getRescueStories(ctx.db);
+  const { skip = 0, limit } = ctx.query;
+
+  const { data, meta } = await Service.getRescueStories(ctx.db, {
+    skip: Number(skip) || 0,
+    limit: Number(limit) || 10,
+  });
 
   ctx.status = 200;
-  ctx.body = { data };
+  ctx.body = { data, meta };
 };
 
 export const getRescueStoryById = async (ctx: Context) => {

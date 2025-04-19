@@ -37,10 +37,15 @@ export const addSuccessStory = async (ctx: Context) => {
 };
 
 export const getSuccessStories = async (ctx: Context) => {
-  const data = await Service.getSuccessStories(ctx.db);
+  const { skip = 0, limit } = ctx.query;
+
+  const { data, meta } = await Service.getSuccessStories(ctx.db, {
+    skip: Number(skip) || 0,
+    limit: Number(limit) || 10,
+  });
 
   ctx.status = 200;
-  ctx.body = { data };
+  ctx.body = { data, meta };
 };
 
 export const getSuccessStoryById = async (ctx: Context) => {

@@ -2,6 +2,7 @@ import Router from "@koa/router";
 import { adminRouter } from "./admin";
 import { applicationRouter } from "./application";
 import { dashboardRouter } from "./dashboard";
+import { donationRouter } from "./donation";
 import { petRouter } from "./pet";
 import { rescueStoriesRouter } from "./rescueStory";
 import { successStoriesRouter } from "./successStory";
@@ -34,6 +35,12 @@ router.use(
   "/success-stories",
   successStoriesRouter.routes(),
   successStoriesRouter.allowedMethods()
+);
+
+router.use(
+  "/donation",
+  donationRouter.routes(),
+  donationRouter.allowedMethods()
 );
 
 export default router;

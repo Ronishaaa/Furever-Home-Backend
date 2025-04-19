@@ -8,8 +8,26 @@ export const addSuccessStory = async (
   return await db.successStory.create({ data });
 };
 
-export const getSuccessStories = async (db: PrismaClient) => {
-  return await db.successStory.findMany({ orderBy: { createdAt: "desc" } });
+export const getSuccessStories = async (
+  db: PrismaClient,
+  {
+    skip,
+    limit,
+  }: {
+    skip: number;
+    limit: number;
+  }
+) => {
+  const [data, total] = await db.$transaction([
+    db.successStory.findMany({
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+    }),
+    db.successStory.count(),
+  ]);
+
+  return { data, meta: { skip, limit, total } };
 };
 
 export const getSuccessStoryById = async (db: PrismaClient, id: number) => {

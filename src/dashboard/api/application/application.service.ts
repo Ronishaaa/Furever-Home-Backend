@@ -38,10 +38,21 @@ export const sendApplicationDecisionEmail = async ({
   });
 };
 
-export const getAllApplicationsService = async (db: PrismaClient) => {
+export const getAllApplicationsService = async (
+  db: PrismaClient,
+  {
+    skip,
+    limit,
+  }: {
+    skip: number;
+    limit: number;
+  }
+) => {
   const [data, total] = await db.$transaction([
     db.application.findMany({
       orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
       include: {
         pet: {
           select: {
@@ -56,7 +67,7 @@ export const getAllApplicationsService = async (db: PrismaClient) => {
     db.application.count(),
   ]);
 
-  return { data, meta: { total } };
+  return { data, meta: { skip, limit, total } };
 };
 
 export const getApplicationByIdService = async (

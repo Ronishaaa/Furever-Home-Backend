@@ -3,7 +3,12 @@ import { ApplicationInput } from "./application.schema";
 import * as Service from "./application.service";
 
 export const getAllApplication = async (ctx: Context) => {
-  const { data, meta } = await Service.getAllApplicationsService(ctx.db);
+  const { skip = 0, limit } = ctx.query;
+
+  const { data, meta } = await Service.getAllApplicationsService(ctx.db, {
+    skip: Number(skip) || 0,
+    limit: Number(limit) || 10,
+  });
 
   ctx.status = 201;
   ctx.body = { data, meta };

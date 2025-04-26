@@ -1,4 +1,3 @@
-// utils/mail.ts
 import { createTransport, getTestMessageUrl } from "nodemailer";
 
 export const transporter = createTransport({

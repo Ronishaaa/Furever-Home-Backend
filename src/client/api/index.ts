@@ -1,5 +1,7 @@
 import Router from "@koa/router";
 import { applicationRouter } from "./applications";
+import { breedRouter } from "./breed";
+import { contactRouter } from "./contact";
 import { donationRouter } from "./donation";
 import { notificationRouter } from "./notification";
 import { petRouter } from "./pet";
@@ -13,6 +15,8 @@ const router = new Router({ prefix: "/api" });
 router.use(userRouter.routes(), userRouter.allowedMethods());
 
 router.use("/pets", petRouter.routes(), petRouter.allowedMethods());
+router.use("/contact", contactRouter.routes(), contactRouter.allowedMethods());
+router.use("/breed", breedRouter.routes(), breedRouter.allowedMethods());
 
 router.use(
   "/application",

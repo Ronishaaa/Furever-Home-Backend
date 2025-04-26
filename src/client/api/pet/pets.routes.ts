@@ -7,4 +7,6 @@ router.get("/:id", Controller.getPetById);
 
 router.get("/", Controller.getAllPets);
 
+router.get("/similar/:id", Controller.getSimilarPets);
+
 export default router;

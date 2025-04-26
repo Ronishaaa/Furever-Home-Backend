@@ -64,3 +64,14 @@ export const getPetById = async (ctx: Context) => {
   ctx.status = 200;
   ctx.body = { pet };
 };
+
+export const getSimilarPets = async (ctx: Context) => {
+  const { id } = ctx.params;
+
+  const similarPets = await PetService.getSimilarPetsService(
+    ctx.db,
+    Number(id)
+  );
+  ctx.status = 200;
+  ctx.body = { pets: similarPets };
+};

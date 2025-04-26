@@ -109,3 +109,37 @@ export const getPetByIdService = async (db: PrismaClient, id: number) => {
     },
   });
 };
+
+export const getSimilarPetsService = async (
+  db: PrismaClient,
+  petId: number
+) => {
+  const pet = await db.pet.findUnique({
+    where: { id: petId },
+    include: { adoptionInfo: true },
+  });
+
+  if (!pet) {
+    throw new Error("Pet not found");
+  }
+
+  const conditions: Prisma.PetWhereInput = {
+    id: { not: petId },
+    AND: [
+      {
+        OR: [
+          { breed: pet.breed },
+          { personality: { hasSome: pet.personality } },
+        ],
+      },
+    ],
+  };
+
+  const similarPets = await db.pet.findMany({
+    where: conditions,
+    take: 4,
+    include: { adoptionInfo: true },
+  });
+
+  return similarPets;
+};

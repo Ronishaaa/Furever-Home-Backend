@@ -45,6 +45,10 @@ export const loginUser = async (data: LoginInput) => {
     throw new AppError("Email or password invalid", 401, true);
   }
 
+  if (!user.verified) {
+    throw new AppError("User not verified", 403, true);
+  }
+
   await db.user.update({
     where: { id: user.id },
     data: { socketId: data.socketId },

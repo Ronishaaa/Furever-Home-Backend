@@ -117,7 +117,7 @@ model Application {
     applicationStatus ApplicationStatus @default(Pending)
     user              User              @relation(fields: [userId], references: [id])
     userId            Int
-    pet               Pet               @relation(fields: [petId], references: [id])
+    pet               Pet               @relation(fields: [petId], references: [id], onDelete: Cascade)
     petId             Int               @unique
     createdAt         DateTime          @default(now())
     updatedAt         DateTime          @updatedAt
@@ -172,7 +172,7 @@ model Notification {
     wishlist   Wishlist @relation(fields: [wishlistId], references: [id])
     wishlistId Int
     petId      Int
-    pet        Pet      @relation(fields: [petId], references: [id])
+    pet        Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
     message    String
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
@@ -181,7 +181,7 @@ model Notification {
 model MatchedPets {
     wishlist   Wishlist @relation(fields: [wishlistId], references: [id])
     wishlistId Int
-    pet        Pet      @relation(fields: [petId], references: [id])
+    pet        Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
     petId      Int
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt

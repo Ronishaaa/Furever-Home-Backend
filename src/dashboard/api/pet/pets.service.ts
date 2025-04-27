@@ -1,4 +1,5 @@
 import {
+  AdoptionStatus,
   EnergyLevel,
   ExperienceLevel,
   Prisma,
@@ -118,6 +119,7 @@ export interface FILTERS {
   type?: string[];
   trainingLevels?: TrainingLevel[];
   experienceLevels?: ExperienceLevel[];
+  adoptionStatus?: AdoptionStatus;
   skip: number;
   limit: number;
   sortBy: string;
@@ -135,6 +137,7 @@ export const getAllPetsService = async (
     personality,
     trainingLevels,
     experienceLevels,
+    adoptionStatus,
     skip,
     limit,
     sortBy,
@@ -187,6 +190,11 @@ export const getAllPetsService = async (
     conditions.push({
       adoptionInfo: { experienceLevel: { in: experienceLevels } },
     });
+  }
+
+  // Apply adoptionStatus filter (Newly added)
+  if (adoptionStatus) {
+    conditions.push({ adoptionStatus });
   }
 
   const [data, total] = await db.$transaction([

@@ -70,7 +70,7 @@ export const updateSuccessStory = async (ctx: Context) => {
 
 export const deleteSuccessStory = async (ctx: Context) => {
   const { id } = ctx.params;
-  await Service.deleteSuccessStory(ctx.db, id);
+  await Service.deleteSuccessStory(ctx.db, Number(id));
 
   ctx.status = 204;
 };

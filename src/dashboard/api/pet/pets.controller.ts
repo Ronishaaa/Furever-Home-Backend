@@ -1,5 +1,10 @@
 import { AppError } from "@exceptions";
-import { EnergyLevel, ExperienceLevel, TrainingLevel } from "@prisma/client";
+import {
+  AdoptionStatus,
+  EnergyLevel,
+  ExperienceLevel,
+  TrainingLevel,
+} from "@prisma/client";
 import cloudinary from "_globals/utils/cloudinary";
 import { optimizeImage } from "_globals/utils/sharpOptimize";
 import { Context } from "koa";
@@ -67,6 +72,7 @@ export const getAllPets = async (ctx: Context) => {
     trainingLevels,
     experienceLevels,
     personality,
+    adoptionStatus,
     skip = 0,
     limit,
     sortBy = "createdAt",
@@ -78,6 +84,7 @@ export const getAllPets = async (ctx: Context) => {
     ageMin: ageMin ? Number(ageMin) : undefined,
     ageMax: ageMax ? Number(ageMax) : undefined,
     gender: gender?.toString() ?? "",
+    adoptionStatus: (adoptionStatus?.toString() as AdoptionStatus) ?? undefined,
     personality: personality
       ? Array.isArray(personality)
         ? personality

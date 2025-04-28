@@ -53,8 +53,6 @@ export const getBreedRecommendation = async (
           return resolve({ message: "No breeds recommended by Python model." });
         }
 
-        console.log("Recommended Breeds:", breeds);
-
         const pets = await db.pet.findMany({
           where: {
             breed: {

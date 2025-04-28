@@ -1,4 +1,4 @@
-import { ApplicationStatus, PrismaClient } from "@prisma/client";
+import { ApplicationStatus, Prisma, PrismaClient } from "@prisma/client";
 import { sendMail } from "@utils";
 import { ApplicationInput } from "./application.schema";
 
@@ -43,13 +43,22 @@ export const getAllApplicationsService = async (
   {
     skip,
     limit,
+    applicationStatus,
   }: {
     skip: number;
     limit: number;
+    applicationStatus: ApplicationStatus;
   }
 ) => {
+  const conditions: Prisma.ApplicationWhereInput[] = [];
+
+  if (applicationStatus) {
+    conditions.push({ applicationStatus });
+  }
+
   const [data, total] = await db.$transaction([
     db.application.findMany({
+      where: { AND: conditions },
       orderBy: { createdAt: "desc" },
       skip,
       take: limit,
@@ -64,7 +73,7 @@ export const getAllApplicationsService = async (
         },
       },
     }),
-    db.application.count(),
+    db.application.count({ where: { AND: conditions } }),
   ]);
 
   return { data, meta: { skip, limit, total } };

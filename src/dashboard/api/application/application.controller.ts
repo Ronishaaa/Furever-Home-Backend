@@ -1,13 +1,16 @@
+import { ApplicationStatus } from "@prisma/client";
 import { Context } from "koa";
 import { ApplicationInput } from "./application.schema";
 import * as Service from "./application.service";
 
 export const getAllApplication = async (ctx: Context) => {
-  const { skip = 0, limit } = ctx.query;
+  const { skip = 0, limit, applicationStatus } = ctx.query;
 
   const { data, meta } = await Service.getAllApplicationsService(ctx.db, {
     skip: Number(skip) || 0,
     limit: Number(limit) || 10,
+    applicationStatus:
+      (applicationStatus?.toString() as ApplicationStatus) ?? undefined,
   });
 
   ctx.status = 201;

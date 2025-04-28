@@ -5,7 +5,7 @@ import { getBreedRecommendation } from "./breed.service";
 export const recommendBreed = async (ctx: Context) => {
   try {
     const parsed = DogInputSchema.parse(ctx.request.body);
-    const recommendations = await getBreedRecommendation(parsed);
+    const recommendations = await getBreedRecommendation(ctx.db, parsed);
     ctx.body = { recommendedBreeds: recommendations };
   } catch (err) {
     ctx.status = 400;

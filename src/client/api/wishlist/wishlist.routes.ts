@@ -7,7 +7,6 @@ const router = new Router();
 
 router.post("/", validate(WishlistSchema), Controller.addOrUpdateWishlist);
 
-
 router.get("/:userId", Controller.getWishlist);
 
 export default router;

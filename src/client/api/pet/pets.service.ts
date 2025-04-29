@@ -41,6 +41,10 @@ export const getAllPetsService = async (
 ) => {
   const conditions: Prisma.PetWhereInput[] = [];
 
+  conditions.push({
+    adoptionStatus: { not: "Adopted" },
+  });
+
   // Apply searchTerm filter for name and breed
   if (searchTerm) {
     conditions.push({

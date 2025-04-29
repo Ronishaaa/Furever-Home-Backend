@@ -101,7 +101,7 @@ export const findMatchingPets = async (
     conditions.push({ age: { lte: Number(ageMax) } });
   }
 
-  if (breed) conditions.push({ breed });
+  if (breed) conditions.push({ breed: { equals: breed, mode: "insensitive" } });
   if (energyLevel) conditions.push({ energyLevel });
   if (gender) conditions.push({ gender });
 

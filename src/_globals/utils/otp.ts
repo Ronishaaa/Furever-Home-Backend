@@ -2,8 +2,7 @@ import { db } from "../db";
 import { sendMail } from "./mail";
 
 export const sendOtpEmail = async (email: string) => {
-  // const otp = crypto.randomInt(100000, 999999).toString();
-  const otp = "123456";
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const expirationTime = Date.now() + 15 * 60 * 1000;
 
   const user = await db.user.findUnique({ where: { email } });
